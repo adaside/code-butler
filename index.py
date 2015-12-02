@@ -19,6 +19,10 @@ SEARCHED = 0
 def lang_option(files, lang=EXTES):
 
     lang_specific = []
+    try:
+        lang = sys.argv[2]
+    except IndexError:
+        pass
 
     if lang not in EXTES and lang is not EXTES:
         print('Unsupported file extension', lang)
