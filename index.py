@@ -11,6 +11,10 @@ EXTES = ('.cpp','.cs','.c','.h','.css','.cjsx','.coffee','.ejs','.erl','.go',
         '.js','.es','.es6','.jsx','.less','.mustache','.php','.pl','.pm',
         '.py','.rb','.sass','.scss','.sh','.zsh','.bash','.styl','.twig','.ts',)
 
+COUNTER = 0
+F_COUNTER = 0
+SEARCHED = 0
+
 
 def lang_option(files, lang=EXTES):
 
@@ -29,6 +33,11 @@ def where(path):
 
     all_files = []
 
+    # In case of singular file:
+    if os.path.isfile(path):
+        return [path]
+
+    # In case of directory:
     for root, dirs, files in os.walk(path):
         files = lang_option(files, lang=EXTES)
         dirs[:] = [d for d in dirs if not d[0] == '.']
@@ -38,29 +47,32 @@ def where(path):
                 # print(os.path.join(root, name))
                 all_files.append(os.path.join(root, name))
 
-
     return all_files
 
 
 def pretty_print(linenum, todo):
     """ Prints a table with all the found todos """
 
+    global COUNTER
     comm_endings = ['"""', "'''", '*/', '-->', '#}', '--}}', '}}', '%>']
     for i in comm_endings:
         if todo.endswith(i):
             todo = todo[:-len(i)]
     print('   line', linenum.rjust(4), '>>\t', todo )
-
+    COUNTER += 1
 
 
 def search_todo(path):
     """ Extracts a todo from file, feeds todos in printing function """
 
     all_files = where(path)
-    for files in all_files:
+    global F_COUNTER
+    global SEARCHED
 
-        f = open(os.path.abspath(files), 'r', encoding='utf-8')
+    for files in all_files:
+        f = open(os.path.abspath(files), 'r')
         printed = False
+        SEARCHED += 1
         for n, row in enumerate(f.readlines()):
 
             todo = re.compile('\\bTODO\\b.*')
@@ -69,18 +81,31 @@ def search_todo(path):
                 if not printed:
                     print('\n',files)
                     printed = True
+                    F_COUNTER += 1
                 pretty_print(str(n+1), found.group())
+        f.close()
+
+    report()
 
 
+def report():
+    """ Prints a report at the end of the search """
 
-@click.group(invoke_without_command=True)
-@click.option('--version', is_flag=True, help='Return the current version.')
-# @click.option('-x', '--ext', nargs=2)
-@click.argument('path')
-def cli(version, path):
-    """ extract comment tags from source files """
+    global COUNTER
+    print('\n\t** REPORT **\n')
+    print('Searched {0} files'.format(SEARCHED))
+    print('Found {0} TODOs in {1} files'.format(COUNTER, F_COUNTER))
 
-    search_todo(path)
-
-    if version:
-        print(require('alfred')[0].version)
+#
+# @click.group(invoke_without_command=True)
+# @click.option('--version', is_flag=True, help='Return the current version.')
+# # @click.option('-x', '--ext', nargs=2)
+# @click.argument('path')
+# def cli(version, path):
+#     """ extract comment tags from source files """
+#
+#     search_todo(path)
+#
+#     if version:
+#         print(require('alfred')[0].version)
+search_todo(sys.argv[1])
