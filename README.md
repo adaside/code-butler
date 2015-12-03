@@ -1,7 +1,7 @@
-## alfe, the code butler
+## Alfe, the code butler
 
-A tool that finds TODOs in your code.
-Currently in development.
+An open source tool that finds TODOs in your code.
+*Currently in development.*
 
 Allows you to
 * search separate files or entire directories

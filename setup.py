@@ -1,7 +1,7 @@
 from setuptools import setup
 
 
-setup(name='alfe',
+setup(name='Alfe',
       version='0.1.0',
       py_modules=['index'],
       description='extract comment tags from source files',
@@ -16,4 +16,3 @@ setup(name='alfe',
         alfe=index:cli
       ''',
       )
-

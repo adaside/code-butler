@@ -16,23 +16,17 @@ F_COUNTER = 0
 SEARCHED = 0
 
 
-def lang_option(files, lang=EXTES):
+def filter_files(files, lang=EXTES):
 
     lang_specific = []
-    try:
-        lang = sys.argv[2]
-    except IndexError:
-        pass
 
-    if lang not in EXTES and lang is not EXTES:
-        print('Unsupported file extension', lang)
     for f in files:
         if f.endswith(lang):
             lang_specific.append(f)
     return lang_specific
 
 
-def where(path):
+def get_files(path):
     """ Finds all files topdown the path """
 
     all_files = []
@@ -43,7 +37,6 @@ def where(path):
 
     # In case of directory:
     for root, dirs, files in os.walk(path):
-        files = lang_option(files, lang=EXTES)
         dirs[:] = [d for d in dirs if not d[0] == '.']
 
         for name in files:
@@ -66,14 +59,13 @@ def pretty_print(linenum, todo):
     COUNTER += 1
 
 
-def search_todo(path):
+def search_todo(filtered_files):
     """ Extracts a todo from file, feeds todos in printing function """
 
-    all_files = where(path)
     global F_COUNTER
     global SEARCHED
 
-    for files in all_files:
+    for files in filtered_files:
         f = open(os.path.abspath(files), 'r')
         printed = False
         SEARCHED += 1
@@ -89,7 +81,6 @@ def search_todo(path):
                 pretty_print(str(n+1), found.group())
         f.close()
 
-    report()
 
 
 def report():
@@ -100,16 +91,30 @@ def report():
     print('Searched {0} files'.format(SEARCHED))
     print('Found {0} TODOs in {1} files'.format(COUNTER, F_COUNTER))
 
-#
-# @click.group(invoke_without_command=True)
-# @click.option('--version', is_flag=True, help='Return the current version.')
-# # @click.option('-x', '--ext', nargs=2)
-# @click.argument('path')
-# def cli(version, path):
-#     """ extract comment tags from source files """
-#
-#     search_todo(path)
-#
-#     if version:
-#         print(require('alfred')[0].version)
-search_todo(sys.argv[1])
+
+
+
+
+@click.group(invoke_without_command=True)
+@click.option('-v', '--version', is_flag=True, help='Return the current version.')
+@click.option('-o', '--only', type=click.Choice(EXTES), help='Specify language extensions to search')
+@click.option('-x', '--exclude', type=click.Choice(EXTES), help='Specify extensions to exclude from search.')
+@click.argument('path', nargs=1, default='', required=False)
+def cli(version, path, only, exclude):
+    """ extract comment tags from source files """
+
+    if path:
+        files = get_files(path)
+
+        if only:
+            filtered_files = filter_files(files, only)
+        elif exclude:
+            filtered_files = filter_files(files, exclude)
+        else:
+            filtered_files = filter_files(files)
+
+        search_todo(filtered_files)
+        report()
+
+    if version:
+        print(require('alfe')[0].version)
