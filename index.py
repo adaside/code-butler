@@ -87,7 +87,7 @@ def report():
     """ Prints a report at the end of the search """
 
     global COUNTER
-    print('\n\t** REPORT **\n')
+    print('\n\t-=-=-=-\n')
     print('Searched {0} files'.format(SEARCHED))
     print('Found {0} TODOs in {1} files'.format(COUNTER, F_COUNTER))
 
@@ -99,7 +99,7 @@ def report():
 @click.option('-v', '--version', is_flag=True, help='Return the current version.')
 @click.option('-o', '--only', type=click.Choice(EXTES), help='Specify language extensions to search')
 @click.option('-x', '--exclude', type=click.Choice(EXTES), help='Specify extensions to exclude from search.')
-@click.argument('path', nargs=1, default='', required=False)
+@click.argument('path', required=False)
 def cli(version, path, only, exclude):
     """ extract comment tags from source files """
 
@@ -109,7 +109,7 @@ def cli(version, path, only, exclude):
         if only:
             filtered_files = filter_files(files, only)
         elif exclude:
-            filtered_files = filter_files(files, exclude)
+            filtered_files = filter_files(files, tuple(x for x in EXTES if x != exclude))
         else:
             filtered_files = filter_files(files)
 
