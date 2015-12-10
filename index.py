@@ -7,7 +7,7 @@ import click
 from pkg_resources import require
 
 EXTES = ('.cpp','.cs','.c','.h','.css','.cjsx','.coffee','.ejs','.erl','.go',
-        '.html','.htm','.hbs','handlebars','.hs','.hng','.hogan','.jade',
+        '.html','.htm','.hbs','.handlebars','.hs','.hng','.hogan','.jade',
         '.js','.es','.es6','.jsx','.less','.mustache','.php','.pl','.pm',
         '.py','.rb','.sass','.scss','.sh','.zsh','.bash','.styl','.twig','.ts',)
 
@@ -17,6 +17,7 @@ SEARCHED = 0
 
 
 def filter_files(files, lang=EXTES):
+    """ Filters files according to options or the extes """
 
     lang_specific = []
 
@@ -82,7 +83,6 @@ def search_todo(filtered_files):
         f.close()
 
 
-
 def report():
     """ Prints a report at the end of the search """
 
@@ -94,10 +94,9 @@ def report():
 
 
 
-
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, help='Return the current version.')
-@click.option('-o', '--only', type=click.Choice(EXTES), help='Specify language extensions to search')
+@click.option('-o', '--only', type=click.Choice(EXTES), help='Specify language extensions to search.')
 @click.option('-x', '--exclude', type=click.Choice(EXTES), help='Specify extensions to exclude from search.')
 @click.argument('path', required=False)
 def cli(version, path, only, exclude):
