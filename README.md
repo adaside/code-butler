@@ -4,7 +4,7 @@ A tool that parses TODOs from your source code.
 
 **Currently in development.**
 
-[alfe-snap](https://cloud.githubusercontent.com/assets/13040597/11715950/e3632f46-9f4e-11e5-9027-390a8427f3a3.png)
+![alfe-snap](https://cloud.githubusercontent.com/assets/13040597/11715950/e3632f46-9f4e-11e5-9027-390a8427f3a3.png)
 
 Allows you to
 * search separate files or entire directories with ease
