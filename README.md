@@ -13,19 +13,22 @@ Allows you to
 
 ## Supported file extensions
 
+Alfe will only search files of the following extensions:
+
 .cpp|.cs|.c|.h|.css|.cjsx|.coffee|.ejs|
 .erl|.go|.html|.htm|.hbs|.handlebars|
 .hs|.hng|.hogan|.jade|.js|.es|.es6|.jsx|
 .less|.mustache|.php|.pl|.pm|.py|.rb|
 .sass|.scss|.sh|.zsh|.bash|.styl|.twig|.ts
 
-## Usage
 
-#### Installment
+#### Installation
 
 Clone, cd, and pip3 install .
 
-#### How to use in CLI:
+## Usage
+
+#### How to use the CLI:
 
 alfe | option | directory/file
 
