@@ -25,6 +25,18 @@ def filter_files(files, lang=EXTES):
         if f.endswith(lang):
             lang_specific.append(f)
     return lang_specific
+    
+
+def parse_gitignore(gipath):
+    """ Returns a list with gitignore content """
+
+    gitignore_file = open(os.path.abspath(gipath), 'r')
+    gilist = []
+    for row in gitignore_file.readlines():
+        if not row.startswith('#') and row != '\n':
+            gilist.append(row[:-1])
+    gitignore_file.close()
+    return gilist
 
 
 def get_files(path):
@@ -38,9 +50,13 @@ def get_files(path):
 
     # In case of directory:
     for root, dirs, files in os.walk(path):
-        dirs[:] = [d for d in dirs if not d[0] == '.']
+        dirs[:] = [d for d in dirs if d[0] != '.']
 
         for name in files:
+            if name == '.gitignore':
+                gipath = os.path.join(root, name)
+                parse_gitignore(gipath)
+
             if not name.startswith('.'):
                 # print(os.path.join(root, name))
                 all_files.append(os.path.join(root, name))
