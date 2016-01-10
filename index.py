@@ -72,12 +72,16 @@ def get_files(path):
     if not gilist:
         for root, dirs, files in os.walk(path):
             dirs[:] = [d for d in dirs if d[0] != '.']
+            if '.gitignore' in os.listdir(root):
+                gilist = parse_gitignore(os.path.join(root, '.gitignore'))
+                path = root
+                break
 
             for name in files:
                 if not name.startswith('.'):
                     all_files.append(os.path.join(root, name))
 
-    elif gilist:
+    if gilist:
         for root, dirs, files in os.walk(path):
             dirs[:] = [d for d in dirs if d[0] != '.' and d not in gilist]
 
