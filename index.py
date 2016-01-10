@@ -2,6 +2,7 @@ import glob
 import re
 import os
 import sys
+import fnmatch
 
 import click
 from pkg_resources import require
@@ -25,7 +26,20 @@ def filter_files(files, lang=EXTES):
         if f.endswith(lang):
             lang_specific.append(f)
     return lang_specific
-    
+
+
+def get_gitignore(path):
+    """ Searches for gitignore file in parent directories """
+
+    if '.gitignore' in os.listdir(path):
+         return parse_gitignore(os.path.join(path, '.gitignore'))
+    else:
+        if os.path.abspath(path) == '/':
+            return
+        path = os.path.join('..', path)
+        get_gitignore(path)
+
+
 
 def parse_gitignore(gipath):
     """ Returns a list with gitignore content """
@@ -34,33 +48,54 @@ def parse_gitignore(gipath):
     gilist = []
     for row in gitignore_file.readlines():
         if not row.startswith('#') and row != '\n':
-            gilist.append(row[:-1])
+            if row.endswith('/\n'):
+                gilist.append(row[:-2])
+            else:
+                gilist.append(row[:-1])
     gitignore_file.close()
     return gilist
 
 
 def get_files(path):
-    """ Finds all files topdown the path """
+    """ Finds all files topdown the path excluding gitignore material """
 
-    all_files = []
-
-    # In case of singular file:
+    # In case path is singular file:
     if os.path.isfile(path):
         return [path]
 
-    # In case of directory:
-    for root, dirs, files in os.walk(path):
-        dirs[:] = [d for d in dirs if d[0] != '.']
+    all_files = []
+    gilist = get_gitignore(path)
+    print(gilist)
 
-        for name in files:
-            if name == '.gitignore':
-                gipath = os.path.join(root, name)
-                parse_gitignore(gipath)
+    # In case path is directory:
 
-            if not name.startswith('.'):
-                # print(os.path.join(root, name))
-                all_files.append(os.path.join(root, name))
+    if not gilist:
+        for root, dirs, files in os.walk(path):
+            dirs[:] = [d for d in dirs if d[0] != '.']
 
+            for name in files:
+                if not name.startswith('.'):
+                    all_files.append(os.path.join(root, name))
+
+    elif gilist:
+        for root, dirs, files in os.walk(path):
+            dirs[:] = [d for d in dirs if d[0] != '.' and d not in gilist]
+
+            for item in gilist:
+                if fnmatch.fnmatch(root, item):
+                    break
+
+            else:
+                ignore = []
+
+                for name in files:
+                    for item in gilist:
+                        if fnmatch.fnmatch(name, item):
+                            ignore.append(name)
+
+                    if not name.startswith('.') and name not in ignore:
+                        all_files.append(os.path.join(root, name))
+    print ('ALL', all_files)
     return all_files
 
 
