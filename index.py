@@ -32,12 +32,13 @@ def get_gitignore(path):
     """ Searches for gitignore file in parent directories """
 
     if '.gitignore' in os.listdir(path):
-         return parse_gitignore(os.path.join(path, '.gitignore'))
+        print('FOUND G I')
+        return parse_gitignore(os.path.join(path, '.gitignore'))
     else:
         if os.path.abspath(path) == '/':
             return
         path = os.path.join('..', path)
-        get_gitignore(path)
+        return get_gitignore(path)
 
 
 
@@ -64,29 +65,38 @@ def get_files(path):
         return [path]
 
     all_files = []
+
+    # Look for gitignore upstream
     gilist = get_gitignore(path)
-    print(gilist)
+    print('GILIST IS', gilist)
 
     # In case path is directory:
 
+    # In case no gitignore was found in current directory or up
     if not gilist:
         for root, dirs, files in os.walk(path):
             dirs[:] = [d for d in dirs if d[0] != '.']
+
+            # Constantly check for gitignore while walking
             if '.gitignore' in os.listdir(root):
-                gilist = parse_gitignore(os.path.join(root, '.gitignore'))
-                path = root
-                break
+                all_files.extend(get_files(root))
+                dirs[:] = []
+                files[:] = []
 
             for name in files:
                 if not name.startswith('.'):
                     all_files.append(os.path.join(root, name))
 
+    # In case gitignore was found
     if gilist:
         for root, dirs, files in os.walk(path):
             dirs[:] = [d for d in dirs if d[0] != '.' and d not in gilist]
 
+            # If root is in gitignore break and don't append anything, continue the walk loop
             for item in gilist:
                 if fnmatch.fnmatch(root, item):
+                    print('MATCH', root, item)
+                    dirs[:] = []
                     break
 
             else:
@@ -94,7 +104,9 @@ def get_files(path):
 
                 for name in files:
                     for item in gilist:
+                        # TODO: fnmatch does not work
                         if fnmatch.fnmatch(name, item):
+                            print('MATCH FILE', name)
                             ignore.append(name)
 
                     if not name.startswith('.') and name not in ignore:
