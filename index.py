@@ -18,7 +18,7 @@ SEARCHED = 0
 
 
 def filter_files(files, lang=EXTES):
-    """ Filters files according to options or the extes """
+    """ Filters files according to options """
 
     lang_specific = []
 
@@ -29,21 +29,21 @@ def filter_files(files, lang=EXTES):
 
 
 def get_gitignore(path):
-    """ Searches for gitignore file in parent directories """
+    """ Searches for gitignore file in current and parent directories """
 
     if '.gitignore' in os.listdir(path):
-        print('FOUND G I')
+        print('** FOUND GITIGNORE IN', path, '\n')
         return parse_gitignore(os.path.join(path, '.gitignore'))
     else:
-        if os.path.abspath(path) == '/':
+        full_path = os.path.abspath(path)
+        if full_path == '/':
             return
-        path = os.path.join('..', path)
-        return get_gitignore(path)
+        return get_gitignore(os.path.dirname(full_path))
 
 
 
 def parse_gitignore(gipath):
-    """ Returns a list with gitignore content """
+    """ Returns a list with gitignore's content """
 
     gitignore_file = open(os.path.abspath(gipath), 'r')
     gilist = []
@@ -68,7 +68,7 @@ def get_files(path):
 
     # Look for gitignore upstream
     gilist = get_gitignore(path)
-    print('GILIST IS', gilist)
+    print('** GILIST IS', gilist, '\n')
 
     # In case path is directory:
 
@@ -92,26 +92,24 @@ def get_files(path):
         for root, dirs, files in os.walk(path):
             dirs[:] = [d for d in dirs if d[0] != '.' and d not in gilist]
 
-            # If root is in gitignore break and don't append anything, continue the walk loop
+            # If root dir is in gitignore break and go to next directory
             for item in gilist:
                 if fnmatch.fnmatch(root, item):
-                    print('MATCH', root, item)
                     dirs[:] = []
                     break
 
             else:
-                ignore = []
-
+                # If file is gitignore material break and go to next file
                 for name in files:
                     for item in gilist:
-                        # TODO: fnmatch does not work
-                        if fnmatch.fnmatch(name, item):
-                            print('MATCH FILE', name)
-                            ignore.append(name)
+                        if fnmatch.fnmatch(name, item) or item.endswith(name):
+                            break
 
-                    if not name.startswith('.') and name not in ignore:
-                        all_files.append(os.path.join(root, name))
-    print ('ALL', all_files)
+                    else:
+                        # Finally append the file if it passed all tests
+                        if not name.startswith('.') and name.endswith(EXTES):
+                            all_files.append(os.path.join(root, name))
+    print ('** ALL FILES FILTERED', all_files)
     return all_files
 
 
@@ -154,7 +152,7 @@ def report():
     """ Prints a report at the end of the search """
 
     global COUNTER
-    print('\n\t-=-=-=-\n')
+    print('\n\n')
     print('Searched {0} files'.format(SEARCHED))
     print('Found {0} TODOs in {1} files'.format(COUNTER, F_COUNTER))
 
@@ -177,7 +175,7 @@ def cli(version, path, only, exclude):
         elif exclude:
             filtered_files = filter_files(files, tuple(x for x in EXTES if x != exclude))
         else:
-            filtered_files = filter_files(files)
+            filtered_files = files
 
         search_todo(filtered_files)
         report()
