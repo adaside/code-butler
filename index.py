@@ -32,7 +32,6 @@ def get_gitignore(path):
     """ Searches for gitignore file in current and parent directories """
 
     if '.gitignore' in os.listdir(path):
-        print('** FOUND GITIGNORE IN', path, '\n')
         return parse_gitignore(os.path.join(path, '.gitignore'))
     else:
         full_path = os.path.abspath(path)
@@ -68,7 +67,6 @@ def get_files(path):
 
     # Look for gitignore upstream
     gilist = get_gitignore(path)
-    print('** GILIST IS', gilist, '\n')
 
     # In case path is directory:
 
@@ -109,7 +107,6 @@ def get_files(path):
                         # Finally append the file if it passed all tests
                         if not name.startswith('.') and name.endswith(EXTES):
                             all_files.append(os.path.join(root, name))
-    print ('** ALL FILES FILTERED', all_files)
     return all_files
 
 
