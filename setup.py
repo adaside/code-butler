@@ -4,9 +4,9 @@ from setuptools import setup
 setup(name='Alfe',
       version='0.1.0',
       py_modules=['index'],
-      description='extract comment tags from source files',
+      description='Extract TODO comment tags from source files',
       author='cyluun',
-      url='https://github.com/cyluun/code-butler',
+      url='https://github.com/cyluun/alfe',
       license='MIT',
       install_requires=[
           'Click'

@@ -127,6 +127,8 @@ def search_todo(filtered_files):
 
     global F_COUNTER
     global SEARCHED
+    todo = re.compile('\\bTODO\\b.*')
+    fixme = re.compile('\\bFIXME\\b.*')
 
     for files in filtered_files:
         f = open(os.path.abspath(files), 'r')
@@ -134,14 +136,19 @@ def search_todo(filtered_files):
         SEARCHED += 1
         for n, row in enumerate(f.readlines()):
 
-            todo = re.compile('\\bTODO\\b.*')
-            found = todo.search(row)
-            if found:
+            found_todo = todo.search(row)
+            found_fixme = fixme.search(row)
+            if found_todo or found_fixme:
                 if not printed:
-                    print('\n',files)
+                    print('')
+                    click.secho(files, fg='blue', bold=True)
                     printed = True
                     F_COUNTER += 1
-                pretty_print(str(n+1), found.group())
+                if found_todo:
+                    pretty_print(str(n+1), found_todo.group())
+                else:
+                    pretty_print(str(n+1), found_fixme.group())
+
         f.close()
 
 
@@ -158,11 +165,14 @@ def report():
 
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, help='Return the current version.')
-@click.option('-o', '--only', type=click.Choice(EXTES), help='Specify language extensions to search.')
-@click.option('-x', '--exclude', type=click.Choice(EXTES), help='Specify extensions to exclude from search.')
+@click.option('-o', '--only', help='Specify language extension to search. Extension form: .extension')
+@click.option('-x', '--exclude', help='Specify extension to exclude from search.')
 @click.argument('path', required=False)
 def cli(version, path, only, exclude):
-    """ extract comment tags from source files """
+    """ Extract TODO comment tags from source files """
+
+    if not path and not version:
+        click.echo('Missing argument PATH')
 
     if path:
         files = get_files(path)

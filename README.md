@@ -4,9 +4,9 @@
 
 **Currently in beta.**
 
-Alfe is a CLI productivity tool that saves you time by finding all the to-do's in your code. It tries its best not to bother with files which may not be yours by filtering out gitignore material when searching inside git repositories. The search is very flexible as you can specify either a file or a directory with a relative or absolute path. There are options for searching only one specific file extension or excluding one.
+Alfe is a CLI productivity tool that saves you time by finding all the TODOs and FIXMEs in your code. It tries its best not to bother with files which may not be yours by filtering out gitignore material when searching inside git repositories. The search is very flexible as you can specify either a file or a directory with a relative or absolute path. There are options for searching only one specific file extension or excluding one.
 
-![alfe-snap](https://cloud.githubusercontent.com/assets/13040597/11715950/e3632f46-9f4e-11e5-9027-390a8427f3a3.png)
+![alfesnap](https://cloud.githubusercontent.com/assets/13040597/12396617/1d5f8fba-be11-11e5-8c91-5f208c6d5e4c.png)
 
 **With Alfe you can**
 * search separate files or entire directories with ease
