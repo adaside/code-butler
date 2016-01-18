@@ -1,5 +1,8 @@
 ![alfe](https://cloud.githubusercontent.com/assets/13040597/12249698/0a2f7d84-b8ca-11e5-8b40-4b6b63ccb086.png)
 
+
+![version](https://img.shields.io/pypi/v/alfe.svg)
+
 **A tool that parses TODOs from your source code effectively.**
 
 **Currently in beta.**
@@ -26,7 +29,9 @@ Alfe is a CLI productivity tool that saves you time by finding all the TODOs and
 
 #### Installation
 
-Currently you'll need to clone, cd, and pip3 install .
+```
+pip3 install alfe
+```
 
 ## Usage
 
