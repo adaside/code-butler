@@ -156,7 +156,10 @@ def report():
     """ Prints a report at the end of the search """
 
     global COUNTER
-    print('\n\n')
+    
+    if COUNTER > 0:
+        print('\n\n')
+
     print('Searched {0} files'.format(SEARCHED))
     print('Found {0} TODOs in {1} files'.format(COUNTER, F_COUNTER))
 
